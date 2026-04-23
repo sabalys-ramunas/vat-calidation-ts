@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <checkVatResponse xmlns="urn:ec.europa.eu:taxud:vies:services:checkVat:types">
+      <countryCode>DE</countryCode>
+      <vatNumber>136695976</vatNumber>
+      <requestDate>2026-04-24+02:00</requestDate>
+      <valid>true</valid>
+      <name>OpenAI Europe GmbH</name>
+      <address>Example Strasse 1
+10115 Berlin</address>
+    </checkVatResponse>
+  </soap:Body>
+</soap:Envelope>

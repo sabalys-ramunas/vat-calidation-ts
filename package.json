@@ -1,0 +1,57 @@
+{
+  "name": "vat-validation-ts",
+  "version": "0.1.0",
+  "description": "VAT validation and company lookup against the European Commission VIES service.",
+  "keywords": ["vat", "vies", "eu", "validation", "typescript", "cli", "soap"],
+  "license": "MIT",
+  "author": "Ramunas Sabalys",
+  "homepage": "https://github.com/sabalys-ramunas/vat-calidation-ts#readme",
+  "bugs": {
+    "url": "https://github.com/sabalys-ramunas/vat-calidation-ts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sabalys-ramunas/vat-calidation-ts.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "bin": {
+    "vat-validation-ts": "./dist/cli.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE", "docs"],
+  "scripts": {
+    "build": "tsup --config tsup.config.ts",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:live": "RUN_VIES_LIVE_TESTS=1 vitest run test/live.test.ts",
+    "pack:check": "npm pack --dry-run --cache ./.npm-cache"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.15.3",
+    "@vitest/coverage-v8": "^3.2.4",
+    "tsup": "^8.3.5",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
