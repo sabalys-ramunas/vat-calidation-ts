@@ -181,4 +181,22 @@ describe("validateVat", () => {
       })
     ).rejects.toBeInstanceOf(VatTimeoutError);
   });
+
+  it("rejects an invalid timeoutMs option", async () => {
+    await expect(
+      validateVat("DE136695976", {
+        fetch: vi.fn(),
+        timeoutMs: 0,
+      })
+    ).rejects.toThrow("timeoutMs must be a positive integer.");
+  });
+
+  it("rejects an invalid retries option", async () => {
+    await expect(
+      validateVat("DE136695976", {
+        fetch: vi.fn(),
+        retries: -1,
+      })
+    ).rejects.toThrow("retries must be a non-negative integer.");
+  });
 });
