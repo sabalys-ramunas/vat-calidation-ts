@@ -5,13 +5,13 @@
   "keywords": ["vat", "vies", "eu", "validation", "typescript", "cli", "soap"],
   "license": "MIT",
   "author": "Ramunas Sabalys",
-  "homepage": "https://github.com/sabalys-ramunas/vat-calidation-ts#readme",
+  "homepage": "https://github.com/sabalys-ramunas/vat-validation-ts#readme",
   "bugs": {
-    "url": "https://github.com/sabalys-ramunas/vat-calidation-ts/issues"
+    "url": "https://github.com/sabalys-ramunas/vat-validation-ts/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sabalys-ramunas/vat-calidation-ts.git"
+    "url": "git+https://github.com/sabalys-ramunas/vat-validation-ts.git"
   },
   "type": "module",
   "sideEffects": false,
@@ -36,6 +36,7 @@
     "build": "tsup --config tsup.config.ts",
     "lint": "biome check .",
     "format": "biome format --write .",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run test:run && npm run build && npm run pack:check",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",

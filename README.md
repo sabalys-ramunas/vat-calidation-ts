@@ -1,33 +1,38 @@
 # vat-validation-ts
 
-VAT validation for Europe, built in TypeScript and backed by the European Commission VIES service.
+[![npm version](https://img.shields.io/npm/v/vat-validation-ts.svg)](https://www.npmjs.com/package/vat-validation-ts)
+[![npm downloads](https://img.shields.io/npm/dm/vat-validation-ts.svg)](https://www.npmjs.com/package/vat-validation-ts)
+[![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-`vat-validation-ts` validates EU VAT numbers, fetches company details when the upstream service provides them, normalizes the result into a clean typed shape, handles common VIES failure modes, supports batch processing, and ships with a CLI that is actually pleasant to use.
+Typed EU VAT validation for Node.js, backed by the European Commission VIES service.
 
-It is intentionally opinionated:
+`vat-validation-ts` validates real VAT numbers against VIES, normalizes the response into a clean TypeScript-friendly shape, handles common failure modes with typed errors, supports bounded-concurrency batch processing, and includes a usable CLI.
 
-- Live validation through VIES, not regex-only guesses
-- Normalized library output, not raw SOAP XML
-- Typed errors with retryability hints
+Available on npm: [vat-validation-ts](https://www.npmjs.com/package/vat-validation-ts)
+
+Links: [npm](https://www.npmjs.com/package/vat-validation-ts) · [GitHub](https://github.com/sabalys-ramunas/vat-validation-ts) · [CLI docs](./docs/cli.md) · [Error docs](./docs/errors.md)
+
+## Why This Package
+
+- Real VIES lookups, not regex-only guesses
+- Typed library API with normalized results
+- First-class error handling with retryability hints
 - Batch helper with bounded concurrency
-- Docs, tests, fixtures, and CI for reliable maintenance
+- CLI for ad hoc checks and scripts
+- Mocked tests by default and opt-in live smoke tests
 
-## Features
+## Install
 
-- Validate a VAT number against the European Commission VIES `checkVat` service
-- Retrieve company name and address when VIES returns them
-- Normalize placeholder values like `---` to `null`
-- Normalize inputs such as `de136695976`, `DE 136 695 976`, or `{ countryCode: "gr", vatNumber: "001234567" }`
-- Export a typed library API with stable error classes
-- Process VAT numbers in batches with bounded concurrency
-- Run from the command line with JSON or human-readable output
-- Ship with mocked tests by default and an opt-in live smoke test
-
-## Getting Started
+Install as a dependency:
 
 ```bash
-npm install
-npm run build
+npm install vat-validation-ts
+```
+
+Run the CLI without installing globally:
+
+```bash
+npx vat-validation-ts validate DE136695976
 ```
 
 ## Quick Start
@@ -76,18 +81,14 @@ import {
 } from "vat-validation-ts";
 ```
 
-### `normalizeVatInput(input)`
-
-Returns a canonical VAT payload:
+Normalize input:
 
 ```ts
 normalizeVatInput("gr 001 234 567");
 // { countryCode: "EL", vatNumber: "001234567", vat: "EL001234567" }
 ```
 
-### `validateVat(input, options?)`
-
-Validates a single VAT number through VIES.
+Validate one VAT number:
 
 ```ts
 const result = await validateVat(
@@ -96,9 +97,7 @@ const result = await validateVat(
 );
 ```
 
-### `validateVatBatch(inputs, options?)`
-
-Validates many VAT numbers without letting one failure kill the whole batch.
+Validate many VAT numbers with concurrency limits:
 
 ```ts
 const batch = await validateVatBatch(
@@ -109,7 +108,7 @@ const batch = await validateVatBatch(
 
 ## Error Handling
 
-The library throws typed errors with stable machine-readable codes and a `retryable` flag:
+The library throws stable typed errors with machine-readable codes and a `retryable` flag:
 
 - `VatInputError`
 - `VatServiceUnavailableError`
@@ -137,31 +136,31 @@ try {
 Validate a single VAT number:
 
 ```bash
-node dist/cli.js validate DE136695976
+npx vat-validation-ts validate DE136695976
 ```
 
 Structured input:
 
 ```bash
-node dist/cli.js validate --country DE --number 136695976
+npx vat-validation-ts validate --country DE --number 136695976
 ```
 
 Batch validation from a file:
 
 ```bash
-node dist/cli.js batch vat-list.txt
+npx vat-validation-ts batch vat-list.txt
 ```
 
 Batch validation from stdin:
 
 ```bash
-printf "DE136695976\nFR40303265045\n" | node dist/cli.js batch
+printf "DE136695976\nFR40303265045\n" | npx vat-validation-ts batch
 ```
 
 JSON output:
 
 ```bash
-node dist/cli.js validate DE136695976 --json
+npx vat-validation-ts validate DE136695976 --json
 ```
 
 Success envelope:
@@ -203,6 +202,17 @@ Failure envelope:
 }
 ```
 
+## Notes About VIES
+
+VIES is an external government service. It can be slow, temporarily unavailable, or omit company fields for valid VAT numbers. This package treats those behaviors as normal operational cases instead of edge-case afterthoughts.
+
+## Docs
+
+- [How it works](./docs/how-it-works.md)
+- [Error handling](./docs/errors.md)
+- [CLI usage](./docs/cli.md)
+- [Testing strategy](./docs/testing.md)
+
 ## Development
 
 ```bash
@@ -220,18 +230,18 @@ Run the opt-in live smoke test:
 RUN_VIES_LIVE_TESTS=1 VIES_LIVE_VAT=DE136695976 npm run test:live
 ```
 
-If VIES or the target member-state backend is temporarily unavailable, the live smoke test skips instead of failing. That keeps the repo honest about real code regressions without treating upstream government-service outages as local breakage.
+If VIES or the target member-state backend is temporarily unavailable, the live smoke test skips instead of failing. That keeps the test useful for catching local regressions without treating upstream outages as project breakage.
 
-## Docs
+## Publishing
 
-- [How it works](./docs/how-it-works.md)
-- [Error handling](./docs/errors.md)
-- [CLI usage](./docs/cli.md)
-- [Testing strategy](./docs/testing.md)
+`npm publish` is guarded by `prepublishOnly`, which runs linting, type-checking, tests, the build, and a dry-run pack check first.
 
-## Notes About VIES
+Typical release flow:
 
-VIES is an external government service. It sometimes responds slowly, returns temporary unavailability faults, or withholds company fields. This package treats those cases as first-class behavior instead of edge-case afterthoughts.
+```bash
+npm version patch
+npm publish --access public
+```
 
 ## License
 
