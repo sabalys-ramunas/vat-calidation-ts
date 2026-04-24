@@ -21,6 +21,30 @@ export const DEFAULT_VIES_ENDPOINT =
 export const DEFAULT_TIMEOUT_MS = 10_000;
 export const DEFAULT_RETRIES = 1;
 
+function normalizeTimeoutMs(value: number | undefined): number {
+  if (value === undefined) {
+    return DEFAULT_TIMEOUT_MS;
+  }
+
+  if (!Number.isInteger(value) || value < 1) {
+    throw new RangeError("timeoutMs must be a positive integer.");
+  }
+
+  return value;
+}
+
+function normalizeRetries(value: number | undefined): number {
+  if (value === undefined) {
+    return DEFAULT_RETRIES;
+  }
+
+  if (!Number.isInteger(value) || value < 0) {
+    throw new RangeError("retries must be a non-negative integer.");
+  }
+
+  return value;
+}
+
 function looksLikeSoapResponse(responseText: string, contentType: string | null): boolean {
   const trimmed = responseText.trim();
   if (!trimmed) {
@@ -108,7 +132,7 @@ async function executeRequest(
     );
   }
 
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const timeoutMs = normalizeTimeoutMs(options.timeoutMs);
   const { signal, timeoutSignal } = createCombinedSignal(timeoutMs, options.signal);
   const envelope = buildCheckVatEnvelope(normalizedInput);
 
@@ -191,7 +215,7 @@ export async function validateVat(
     throw normalizeToVatError(error);
   }
 
-  const retries = options.retries ?? DEFAULT_RETRIES;
+  const retries = normalizeRetries(options.retries);
   let attempt = 0;
 
   while (true) {
